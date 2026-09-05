@@ -1,0 +1,19 @@
+# Dependencias y paquetes
+node_modules/
+vendor/
+
+# Archivos de entorno y credenciales
+.env
+.env.local
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Carpetas de compilación e IDEs
+bin/
+obj/
+target/
+.idea/
+.vscode/
+*.log
