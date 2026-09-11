@@ -1,14 +1,14 @@
 
-
+// Uso de polimorfismo para la reutilizacion del nodo
 
 namespace Biblioteca.TDA
 {
-    public class Nodo<T>
+    public class NodoSimple
     {
-        public T Dato { get; set; }
-        public Nodo<T>? Siguiente { get; set; }
+        public object? Dato { get; set; }
+        public NodoSimple? Siguiente { get; set; }
 
-        public Nodo(T dato)
+        public NodoSimple(object? dato)
         {
             Dato = dato;
             Siguiente = null;

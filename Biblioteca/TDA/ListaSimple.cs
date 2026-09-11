@@ -3,49 +3,92 @@
 
 namespace Biblioteca.TDA
 {
-    public class ListaSimple<T>
+    public delegate int ComparadorCategoria(Models.Categoria a, Models.Categoria b);
+    public delegate bool CriterioCategoria(Models.Categoria categoria);
+    public delegate void AccionCategoria(Models.Categoria categoria);
+
+    public delegate int ComparadorLibro(Models.Libro a, Models.Libro b);
+    public delegate bool CriterioLibro(Models.Libro libro);
+    public delegate void AccionLibro(Models.Libro libro);
+
+    public abstract class NodoLista
     {
-        private Nodo<T>? cabeza;
+    }
+
+    public sealed class NodoCategoria : NodoLista
+    {
+        public Models.Categoria Dato { get; set; }
+        public NodoCategoria? Siguiente { get; set; }
+
+        public NodoCategoria(Models.Categoria dato)
+        {
+            Dato = dato;
+            Siguiente = null;
+        }
+    }
+
+    public sealed class NodoLibro : NodoLista
+    {
+        public Models.Libro Dato { get; set; }
+        public NodoLibro? Siguiente { get; set; }
+
+        public NodoLibro(Models.Libro dato)
+        {
+            Dato = dato;
+            Siguiente = null;
+        }
+    }
+
+    public abstract class ListaSimple
+    {
         private int cantidad;
 
         public int Cantidad => cantidad;
-        public bool EstaVacia => cabeza == null;
-        public Nodo<T>? Cabeza => cabeza;
+        public bool EstaVacia => cantidad == 0;
 
-        public void InsertarFinal(T dato)
+        protected void AumentarCantidad() => cantidad++;
+        protected void DisminuirCantidad() => cantidad--;
+    }
+
+    public sealed class ListaCategorias : ListaSimple
+    {
+        public NodoCategoria? Cabeza { get; private set; }
+
+        public void InsertarFinal(Models.Categoria dato)
         {
-            Nodo<T> nuevo = new Nodo<T>(dato);
+            NodoCategoria nuevo = new NodoCategoria(dato);
 
-            if (cabeza == null)
+            if (Cabeza == null)
             {
-                cabeza = nuevo;
+                Cabeza = nuevo;
             }
             else
             {
-                Nodo<T> actual = cabeza;
+                NodoCategoria? actual = Cabeza;
                 while (actual.Siguiente != null)
                 {
                     actual = actual.Siguiente;
                 }
+
                 actual.Siguiente = nuevo;
             }
 
-            cantidad++;
+            AumentarCantidad();
         }
 
-        public void InsertarOrdenado(T dato, Comparison<T> comparador)
+        public void InsertarOrdenado(Models.Categoria dato, ComparadorCategoria comparador)
         {
-            Nodo<T> nuevo = new Nodo<T>(dato);
+            NodoCategoria nuevo = new NodoCategoria(dato);
 
-            if (cabeza == null || comparador(dato, cabeza.Dato) < 0)
+            if (Cabeza == null || comparador(dato, Cabeza.Dato) < 0)
             {
-                nuevo.Siguiente = cabeza;
-                cabeza = nuevo;
-                cantidad++;
+                nuevo.Siguiente = Cabeza;
+                Cabeza = nuevo;
+                AumentarCantidad();
                 return;
             }
 
-            Nodo<T> actual = cabeza;
+            NodoCategoria? actual = Cabeza;
             while (actual.Siguiente != null && comparador(dato, actual.Siguiente.Dato) >= 0)
             {
                 actual = actual.Siguiente;
@@ -53,14 +96,13 @@ namespace Biblioteca.TDA
 
             nuevo.Siguiente = actual.Siguiente;
             actual.Siguiente = nuevo;
-            cantidad++;
+            AumentarCantidad();
         }
 
-
-        public bool Eliminar(Func<T, bool> criterio)
+        public bool Eliminar(CriterioCategoria criterio)
         {
-            Nodo<T>? actual = cabeza;
-            Nodo<T>? anterior = null;
+            NodoCategoria? actual = Cabeza;
+            NodoCategoria? anterior = null;
 
             while (actual != null)
             {
@@ -68,13 +110,14 @@ namespace Biblioteca.TDA
                 {
                     if (anterior == null)
                     {
-                        cabeza = actual.Siguiente;
+                        Cabeza = actual.Siguiente;
                     }
                     else
                     {
                         anterior.Siguiente = actual.Siguiente;
                     }
-                    cantidad--;
+
+                    DisminuirCantidad();
                     return true;
                 }
 
@@ -85,23 +128,25 @@ namespace Biblioteca.TDA
             return false;
         }
 
-        public T? Buscar(Func<T, bool> criterio)
+        public Models.Categoria? Buscar(CriterioCategoria criterio)
         {
-            Nodo<T>? actual = cabeza;
+            NodoCategoria? actual = Cabeza;
             while (actual != null)
             {
                 if (criterio(actual.Dato))
                 {
                     return actual.Dato;
                 }
+
                 actual = actual.Siguiente;
             }
-            return default;
+
+            return null;
         }
 
-        public void Recorrer(Action<T> accion)
+        public void Recorrer(AccionCategoria accion)
         {
-            Nodo<T>? actual = cabeza;
+            NodoCategoria? actual = Cabeza;
             while (actual != null)
             {
                 accion(actual.Dato);
@@ -109,4 +154,110 @@ namespace Biblioteca.TDA
             }
         }
     }
+
+    public sealed class ListaLibros : ListaSimple
+    {
+        public NodoLibro? Cabeza { get; private set; }
+
+        public void InsertarFinal(Models.Libro dato)
+        {
+            NodoLibro nuevo = new NodoLibro(dato);
+
+            if (Cabeza == null)
+            {
+                Cabeza = nuevo;
+            }
+            else
+            {
+                NodoLibro? actual = Cabeza;
+                while (actual.Siguiente != null)
+                {
+                    actual = actual.Siguiente;
+                }
+
+                actual.Siguiente = nuevo;
+            }
+
+            AumentarCantidad();
+        }
+
+        public void InsertarOrdenado(Models.Libro dato, ComparadorLibro comparador)
+        {
+            NodoLibro nuevo = new NodoLibro(dato);
+
+            if (Cabeza == null || comparador(dato, Cabeza.Dato) < 0)
+            {
+                nuevo.Siguiente = Cabeza;
+                Cabeza = nuevo;
+                AumentarCantidad();
+                return;
+            }
+
+            NodoLibro? actual = Cabeza;
+            while (actual.Siguiente != null && comparador(dato, actual.Siguiente.Dato) >= 0)
+            {
+                actual = actual.Siguiente;
+            }
+
+            nuevo.Siguiente = actual.Siguiente;
+            actual.Siguiente = nuevo;
+            AumentarCantidad();
+        }
+
+        public bool Eliminar(CriterioLibro criterio)
+        {
+            NodoLibro? actual = Cabeza;
+            NodoLibro? anterior = null;
+
+            while (actual != null)
+            {
+                if (criterio(actual.Dato))
+                {
+                    if (anterior == null)
+                    {
+                        Cabeza = actual.Siguiente;
+                    }
+                    else
+                    {
+                        anterior.Siguiente = actual.Siguiente;
+                    }
+
+                    DisminuirCantidad();
+                    return true;
+                }
+
+                anterior = actual;
+                actual = actual.Siguiente;
+            }
+
+            return false;
+        }
+
+        public Models.Libro? Buscar(CriterioLibro criterio)
+        {
+            NodoLibro? actual = Cabeza;
+            while (actual != null)
+            {
+                if (criterio(actual.Dato))
+                {
+                    return actual.Dato;
+                }
+
+                actual = actual.Siguiente;
+            }
+
+            return null;
+        }
+
+        public void Recorrer(AccionLibro accion)
+        {
+            NodoLibro? actual = Cabeza;
+            while (actual != null)
+            {
+                accion(actual.Dato);
+                actual = actual.Siguiente;
+            }
+        }
+    }
+
 }

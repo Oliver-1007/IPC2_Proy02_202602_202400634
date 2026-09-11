@@ -145,12 +145,12 @@ namespace Biblioteca.TDA
             return actual.Libro;
         }
 
-        public void RecorrerAscendente(Action<Models.Libro> accion)
+        public void RecorrerAscendente(AccionLibro accion)
         {
             RecorrerInOrden(raiz, accion);
         }
 
-        private void RecorrerInOrden(NodoIndiceLibro? nodo, Action<Models.Libro> accion)
+        private void RecorrerInOrden(NodoIndiceLibro? nodo, AccionLibro accion)
         {
             if (nodo == null) return;
             RecorrerInOrden(nodo.Izquierdo, accion);

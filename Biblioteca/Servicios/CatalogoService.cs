@@ -9,14 +9,14 @@ namespace Biblioteca.Servicios
     public class CatalogoService
     {
         private ListaCategorias raices;
-        private ArbolIndiceCategorias indiceCategorias;
-        private ArbolIndiceLibros indiceLibros;
+        private ABBIndiceCategorias indiceCategorias;
+        private ABBIndiceLibros indiceLibros;
 
         public CatalogoService()
         {
             raices = new ListaCategorias();
-            indiceCategorias = new ArbolIndiceCategorias();
-            indiceLibros = new ArbolIndiceLibros();
+            indiceCategorias = new ABBIndiceCategorias();
+            indiceLibros = new ABBIndiceLibros();
         }
 
         public ListaCategorias Raices => raices;
@@ -25,8 +25,8 @@ namespace Biblioteca.Servicios
         public void Reiniciar()
         {
             raices = new ListaCategorias();
-            indiceCategorias = new ArbolIndiceCategorias();
-            indiceLibros = new ArbolIndiceLibros();
+            indiceCategorias = new ABBIndiceCategorias();
+            indiceLibros = new ABBIndiceLibros();
         }
 
         private static int ComparadorCategoriaPorNombre(Categoria a, Categoria b)
