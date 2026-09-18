@@ -7,15 +7,15 @@ namespace Biblioteca.Models
     {
         public string Nombre { get; set; }
         public Categoria? Padre { get; set; }
-        public ListaSimple<Categoria> Subcategorias { get; set; }
-        public ListaSimple<Libro> Libros { get; set; }
+        public ListaCategorias Subcategorias { get; set; }
+        public ListaLibros Libros { get; set; }
 
         public Categoria(string nombre, Categoria? padre = null)
         {
             Nombre = nombre;
             Padre = padre;
-            Subcategorias = new ListaSimple<Categoria>();
-            Libros = new ListaSimple<Libro>();
+            Subcategorias = new ListaCategorias();
+            Libros = new ListaLibros();
         }
     }
 }
