@@ -1,0 +1,37 @@
+@model Biblioteca.Models.Categoria
+
+<details class="nodo-categoria" open>
+    <summary>
+        @Model.Nombre
+        <span class="acciones-nodo">
+            <a asp-controller="Categorias" asp-action="Grafica" asp-route-nombreCategoria="@Model.Nombre">Ver estructura gráfica</a>
+            @if (!Model.Libros.EstaVacia)
+            {
+                <a asp-controller="Categorias" asp-action="GraficaLibros" asp-route-nombreCategoria="@Model.Nombre">Ver libros (ISBN asc.)</a>
+            }
+        </span>
+    </summary>
+
+    @if (!Model.Libros.EstaVacia)
+    {
+        <ul class="lista-libros">
+            @{
+                var nodoLibro = Model.Libros.Cabeza;
+            }
+            @while (nodoLibro != null)
+            {
+                <li>@nodoLibro.Dato.Titulo — ISBN @nodoLibro.Dato.Isbn</li>
+                nodoLibro = nodoLibro.Siguiente;
+            }
+        </ul>
+    }
+
+    @{
+        var nodoSub = Model.Subcategorias.Cabeza;
+    }
+    @while (nodoSub != null)
+    {
+        <partial name="_NodoCategoria" model="nodoSub.Dato" />
+        nodoSub = nodoSub.Siguiente;
+    }
+</details>

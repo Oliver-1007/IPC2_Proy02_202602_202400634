@@ -1,22 +1,244 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
+* { box-sizing: border-box; }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #F4F6F8;
+    color: #2C3E50;
+}
+
+.contenedor {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.encabezado {
+    background-color: #2C3E50;
+    color: white;
+    padding: 14px 0;
+}
+
+.encabezado .contenedor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.marca {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.menu a {
+    color: #EAF2FB;
+    text-decoration: none;
+    margin-left: 16px;
+    font-size: 0.88rem;
+}
+
+.menu a:hover {
+    text-decoration: underline;
+}
+
+.contenido {
+    padding: 30px 20px;
+    min-height: 60vh;
+}
+
+.tarjeta {
+    background: white;
+    border-radius: 8px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.tarjeta h1 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #EAF2FB;
+    padding-bottom: 10px;
+}
+
+.resumen {
+    display: flex;
+    gap: 24px;
+    margin: 20px 0;
+}
+
+.resumen-item {
+    background: #EAF2FB;
+    border-radius: 8px;
+    padding: 14px 22px;
+    text-align: center;
+}
+
+.resumen-item .numero {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2C3E50;
+}
+
+.resumen-item .etiqueta {
+    font-size: 0.85rem;
+    color: #566573;
+}
+
+.formulario, .formulario-linea {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 420px;
+    margin-top: 16px;
+}
+
+.formulario-linea {
+    flex-direction: row;
+    align-items: center;
+    max-width: none;
+    flex-wrap: wrap;
+}
+
+.formulario-linea input {
+    flex: 1;
+    min-width: 220px;
+}
+
+label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #566573;
+}
+
+input[type="text"], input[type="number"], input[type="file"] {
+    padding: 8px 10px;
+    border: 1px solid #CBD5DC;
+    border-radius: 5px;
+    font-size: 0.95rem;
+}
+
+.boton {
+    display: inline-block;
+    background-color: #2C3E50;
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    text-decoration: none;
+    text-align: center;
+}
+
+.boton:hover {
+    background-color: #1B2631;
+}
+
+.boton-secundario {
+    background-color: #85929E;
+}
+
+.boton-secundario:hover {
+    background-color: #707B7C;
+}
+
+.boton-peligro {
+    background-color: #C0392B;
+}
+
+.boton-peligro:hover {
+    background-color: #922B21;
+}
+
+.alerta {
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    font-size: 0.92rem;
+}
+
+.alerta-exito {
+    background-color: #E8F8F0;
+    color: #196F3D;
+    border: 1px solid #ABEBC6;
+}
+
+.alerta-error {
+    background-color: #FDEDEC;
+    color: #922B21;
+    border: 1px solid #F5B7B1;
+}
+
+.arbol {
+    margin-top: 16px;
+}
+
+.nodo-categoria {
+    margin: 6px 0 6px 4px;
+    padding: 6px 10px;
+    border-left: 2px solid #D5DBDB;
+}
+
+.nodo-categoria summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.acciones-nodo {
+    margin-left: 14px;
+    font-weight: 400;
+    font-size: 0.8rem;
+}
+
+.acciones-nodo a {
+    margin-right: 10px;
+    color: #2874A6;
+}
+
+.lista-libros {
+    margin: 6px 0 6px 20px;
+    font-size: 0.9rem;
+    color: #566573;
+}
+
+.tabla-datos {
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+.tabla-datos th, .tabla-datos td {
+    border: 1px solid #D5DBDB;
+    padding: 8px 14px;
+    text-align: left;
+}
+
+.tabla-datos th {
+    background-color: #EAF2FB;
+}
+
+.tabla-completa {
+    width: 100%;
+}
+
+.imagen-grafica {
+    max-width: 100%;
+    border: 1px solid #D5DBDB;
+    border-radius: 6px;
+    margin-top: 16px;
+}
+
+.lista-datos {
+    line-height: 1.8;
+}
+
+.pie {
+    text-align: center;
+    padding: 16px 0;
+    font-size: 0.82rem;
+    color: #85929E;
 }

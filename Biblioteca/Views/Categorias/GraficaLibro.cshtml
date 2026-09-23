@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Libros de la categoría";
+}
+
+<section class="tarjeta">
+    <h1>Libros de "@ViewBag.NombreCategoria" (orden ascendente por ISBN)</h1>
+
+    @if (ViewBag.Error != null)
+    {
+        <p class="alerta alerta-error">@ViewBag.Error</p>
+        <p>Verifique que Graphviz (comando <code>dot</code>) esté instalado y disponible en el PATH del sistema.</p>
+    }
+    else
+    {
+        <img class="imagen-grafica" src="@ViewBag.RutaImagen" alt="Libros de la categoría" />
+    }
+
+    <p><a asp-controller="Categorias" asp-action="Estructura" class="boton boton-secundario">Volver a la estructura</a></p>
+</section>

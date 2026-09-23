@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Agregar categoría";
+}
+
+<section class="tarjeta">
+    <h1>Agregar categoría</h1>
+    <p>Los nombres de categoría son únicos en todo el catálogo. Deje el campo
+       "categoría padre" vacío para crear una categoría principal.</p>
+
+    <form asp-controller="Categorias" asp-action="AgregarCategoria" method="post" class="formulario">
+        <label for="nombre">Nombre de la categoría</label>
+        <input type="text" id="nombre" name="nombre" required />
+
+        <label for="nombrePadre">Categoría padre (opcional)</label>
+        <input type="text" id="nombrePadre" name="nombrePadre" />
+
+        <button type="submit" class="boton">Agregar</button>
+    </form>
+</section>
