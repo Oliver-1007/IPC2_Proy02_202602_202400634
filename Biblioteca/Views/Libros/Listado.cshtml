@@ -1,0 +1,41 @@
+@model Biblioteca.TDA.ListaLibros
+@{
+    ViewData["Title"] = "Listado de libros";
+}
+
+<section class="tarjeta">
+    <h1>Listado de libros (orden ascendente por ISBN)</h1>
+
+    @if (Model.EstaVacia)
+    {
+        <p class="alerta alerta-error">El catálogo no tiene libros registrados.</p>
+    }
+    else
+    {
+        <table class="tabla-datos tabla-completa">
+            <thead>
+                <tr>
+                    <th>ISBN</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Categoría</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var nodo = Model.Cabeza;
+                }
+                @while (nodo != null)
+                {
+                    <tr>
+                        <td>@nodo.Dato.Isbn</td>
+                        <td>@nodo.Dato.Titulo</td>
+                        <td>@nodo.Dato.Autor</td>
+                        <td>@nodo.Dato.CategoriaAsignada.Nombre</td>
+                    </tr>
+                    nodo = nodo.Siguiente;
+                }
+            </tbody>
+        </table>
+    }
+</section>
