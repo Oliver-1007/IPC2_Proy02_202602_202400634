@@ -1,0 +1,45 @@
+@model Biblioteca.TDA.ListaCategorias
+@{
+    ViewData["Title"] = "Estructura de categorías";
+    string? nombreInicio = ViewBag.NombreInicio as string;
+    Biblioteca.Models.Categoria? categoriaInicio = ViewBag.CategoriaInicio as Biblioteca.Models.Categoria;
+}
+
+<section class="tarjeta">
+    <h1>Estructura de categorías</h1>
+    <p>Organización jerárquica completa del catálogo, ordenada alfabéticamente. Puede
+       visualizarla desde una subcategoría específica escribiendo su nombre a continuación.</p>
+
+    <form asp-controller="Categorias" asp-action="Estructura" method="get" class="formulario-linea">
+        <input type="text" name="nombreInicio" placeholder="Ver desde una subcategoría (opcional)" value="@nombreInicio" />
+        <button type="submit" class="boton">Filtrar</button>
+        <a asp-controller="Categorias" asp-action="Estructura" class="boton boton-secundario">Ver todo</a>
+    </form>
+
+    <div class="arbol">
+        @if (!string.IsNullOrWhiteSpace(nombreInicio))
+        {
+            if (categoriaInicio != null)
+            {
+                <partial name="_NodoCategoria" model="categoriaInicio" />
+            }
+            else
+            {
+                <p class="alerta alerta-error">No se encontró la categoría "@nombreInicio".</p>
+            }
+        }
+        else if (Model.EstaVacia)
+        {
+            <p class="alerta alerta-error">Aún no hay categorías registradas. Cargue un XML o agregue una categoría.</p>
+        }
+        else
+        {
+            var nodo = Model.Cabeza;
+            while (nodo != null)
+            {
+                <partial name="_NodoCategoria" model="nodo.Dato" />
+                nodo = nodo.Siguiente;
+            }
+        }
+    </div>
+</section>

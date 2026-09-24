@@ -1,7 +1,11 @@
+using Biblioteca.Servicios;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<CatalogoService>();
+builder.Services.AddSingleton<GraphvizService>();
 
 var app = builder.Build();
 
@@ -13,7 +17,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

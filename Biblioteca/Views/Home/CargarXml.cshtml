@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Cargar XML";
+}
+
+<section class="tarjeta">
+    <h1>Cargar archivo de configuración XML</h1>
+    <p>Seleccione un archivo <code>entrada.xml</code> con las secciones <code>listaCategorias</code>
+       y/o <code>listaLibros</code>. La carga es incremental: puede cargar varios archivos sin perder
+       la información ya registrada.</p>
+
+    <form asp-controller="Home" asp-action="CargarXml" method="post" enctype="multipart/form-data" class="formulario">
+        <label for="archivoXml">Archivo XML</label>
+        <input type="file" id="archivoXml" name="archivoXml" accept=".xml" required />
+        <button type="submit" class="boton">Cargar</button>
+    </form>
+</section>

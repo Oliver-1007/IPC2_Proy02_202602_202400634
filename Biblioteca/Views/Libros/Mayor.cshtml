@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Libro con mayor ISBN";
+    var libro = ViewBag.Libro as Biblioteca.Models.Libro;
+}
+
+<section class="tarjeta">
+    <h1>Libro con mayor ISBN</h1>
+    @if (libro != null)
+    {
+        <table class="tabla-datos">
+            <tr><th>ISBN</th><td>@libro.Isbn</td></tr>
+            <tr><th>Título</th><td>@libro.Titulo</td></tr>
+            <tr><th>Autor</th><td>@libro.Autor</td></tr>
+            <tr><th>Categoría</th><td>@libro.CategoriaAsignada.Nombre</td></tr>
+        </table>
+    }
+    else
+    {
+        <p class="alerta alerta-error">El catálogo no tiene libros registrados.</p>
+    }
+</section>

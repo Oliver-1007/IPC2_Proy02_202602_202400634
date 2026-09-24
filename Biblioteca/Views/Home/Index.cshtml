@@ -1,8 +1,25 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="tarjeta">
+    <h1>Sistema de Catálogo de Librería</h1>
+    <p>Este sistema permite administrar de forma jerárquica el catálogo de libros de la
+       librería, organizado por categorías y subcategorías, con búsquedas eficientes por ISBN.</p>
+
+    <div class="resumen">
+        <div class="resumen-item">
+            <span class="numero">@ViewBag.TotalCategorias</span>
+            <span class="etiqueta">Categorías principales</span>
+        </div>
+        <div class="resumen-item">
+            <span class="numero">@ViewBag.TotalLibros</span>
+            <span class="etiqueta">Libros registrados</span>
+        </div>
+    </div>
+
+    <form asp-controller="Home" asp-action="Reiniciar" method="post"
+          onsubmit="return confirm('¿Desea inicializar el sistema? Se perderá toda la información en memoria.');">
+        <button type="submit" class="boton boton-secundario">Inicializar sistema</button>
+    </form>
+</section>
