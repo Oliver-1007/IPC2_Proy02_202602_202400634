@@ -1,0 +1,13 @@
+digraph EstructuraCatalogo {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor="#EAF2FB", fontname="Helvetica"];
+    "Catalogo" [label="Catalogo"];
+    "Arquitectura" [label="Arquitectura"];
+    "Catalogo" -> "Arquitectura";
+    "Ecologia" [label="Ecologia"];
+    "Estadistica" [label="Estadistica"];
+    "Programacion" [label="Programacion"];
+    "Estadistica" -> "Programacion";
+    "Ecologia" -> "Estadistica";
+    "Catalogo" -> "Ecologia";
+}

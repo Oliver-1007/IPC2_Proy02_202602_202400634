@@ -68,6 +68,45 @@ namespace IPC2_Proy02.Controllers
             return View();
         }
 
+        // Mostrar la estructura del AVL global de libros
+        public IActionResult GraficaAVL()
+        {
+            ViewBag.Error = TempData["ErrorGraficaAVL"] as string;
+
+            try
+            {
+                string dot = catalogo.GenerarDotAVLLibros();
+                ViewBag.RutaImagen = graphviz.GenerarImagen(dot, "estructura_AVL_libros");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+            }
+
+            return View();
+        }
+
+        // Descargar la imagen del AVL y guardarla como reporte
+        public IActionResult DescargarImagenAVL()
+        {
+            const string nombreArchivo = "estructura_AVL_libros";
+
+            try
+            {
+                string dot = catalogo.GenerarDotAVLLibros();
+                graphviz.GenerarImagen(dot, nombreArchivo);
+                graphviz.GuardarImagenEnReporte(nombreArchivo);
+
+                byte[] imagen = graphviz.ObtenerImagen(nombreArchivo);
+                return File(imagen, "image/png", nombreArchivo + ".png");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorGraficaAVL"] = ex.Message;
+                return RedirectToAction("GraficaAVL");
+            }
+        }
+
         // Agregar una categoría
         [HttpGet]
         public IActionResult AgregarCategoria()

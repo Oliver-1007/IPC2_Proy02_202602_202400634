@@ -6,13 +6,21 @@ namespace Biblioteca.Servicios
     public class GraphvizService
     {
         private readonly string carpetaSalida;
+        private readonly string carpetaReporte;
 
         public GraphvizService(IWebHostEnvironment entorno)
         {
             carpetaSalida = Path.Combine(entorno.WebRootPath, "graficas");
+            carpetaReporte = Path.Combine(entorno.ContentRootPath, "Reporte Dot");
+
             if (!Directory.Exists(carpetaSalida))
             {
                 Directory.CreateDirectory(carpetaSalida);
+            }
+
+            if (!Directory.Exists(carpetaReporte))
+            {
+                Directory.CreateDirectory(carpetaReporte);
             }
         }
 
@@ -46,6 +54,19 @@ namespace Biblioteca.Servicios
             }
 
             return "/graficas/" + nombreArchivo + ".png";
+        }
+
+        public void GuardarImagenEnReporte(string nombreArchivo)
+        {
+            string rutaOrigen = Path.Combine(carpetaSalida, nombreArchivo + ".png");
+            string rutaDestino = Path.Combine(carpetaReporte, nombreArchivo + ".png");
+            File.Copy(rutaOrigen, rutaDestino, true);
+        }
+
+        public byte[] ObtenerImagen(string nombreArchivo)
+        {
+            string rutaImagen = Path.Combine(carpetaSalida, nombreArchivo + ".png");
+            return File.ReadAllBytes(rutaImagen);
         }
     }
 }

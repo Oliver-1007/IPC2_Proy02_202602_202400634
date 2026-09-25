@@ -1,0 +1,5 @@
+digraph EstructuraCatalogo {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor="#EAF2FB", fontname="Helvetica"];
+    "Arquitectura" [label="Arquitectura"];
+}

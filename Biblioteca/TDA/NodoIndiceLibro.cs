@@ -7,10 +7,12 @@ namespace Biblioteca.TDA
         public Models.Libro Libro { get; set; }
         public NodoIndiceLibro? Izquierdo { get; set; }
         public NodoIndiceLibro? Derecho { get; set; }
+        public int Altura { get; set; }
 
         public NodoIndiceLibro(Models.Libro libro)
         {
             Libro = libro;
+            Altura = 1;
         }
     }
 }

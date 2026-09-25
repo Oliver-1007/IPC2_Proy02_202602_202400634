@@ -10,13 +10,13 @@ namespace Biblioteca.Servicios
     {
         private ListaCategorias raices;
         private ABBIndiceCategorias indiceCategorias;
-        private ABBIndiceLibros indiceLibros;
+        private AVLIndiceLibros indiceLibros;
 
         public CatalogoService()
         {
             raices = new ListaCategorias();
             indiceCategorias = new ABBIndiceCategorias();
-            indiceLibros = new ABBIndiceLibros();
+            indiceLibros = new AVLIndiceLibros();
         }
 
         public ListaCategorias Raices => raices;
@@ -26,7 +26,7 @@ namespace Biblioteca.Servicios
         {
             raices = new ListaCategorias();
             indiceCategorias = new ABBIndiceCategorias();
-            indiceLibros = new ABBIndiceLibros();
+            indiceLibros = new AVLIndiceLibros();
         }
 
         private static int ComparadorCategoriaPorNombre(Categoria a, Categoria b)
@@ -155,6 +155,179 @@ namespace Biblioteca.Servicios
 
         // ---------- Carga incremental desde XML ----------
 
+        // ---- Nodo y cola propia para categorías pendientes de su padre ----
+        private class NodoPendienteCategoria
+        {
+            public string Nombre;
+            public string NombrePadre;
+            public NodoPendienteCategoria? Siguiente;
+
+            public NodoPendienteCategoria(string nombre, string nombrePadre)
+            {
+                Nombre = nombre;
+                NombrePadre = nombrePadre;
+                Siguiente = null;
+            }
+        }
+
+        // Cola persiste entre llamadas a CargarDesdeXml, porque la carga es incremental
+        private NodoPendienteCategoria? inicioPendientes = null;
+        private NodoPendienteCategoria? finPendientes = null;
+
+        private void EncolarPendiente(string nombre, string nombrePadre)
+        {
+            NodoPendienteCategoria nuevo = new NodoPendienteCategoria(nombre, nombrePadre);
+            if (inicioPendientes == null)
+            {
+                inicioPendientes = nuevo;
+                finPendientes = nuevo;
+            }
+            else
+            {
+                finPendientes!.Siguiente = nuevo;
+                finPendientes = nuevo;
+            }
+        }
+
+        // Intenta insertar los pendientes en varias pasadas, hasta que ya no
+        // se resuelva ninguno más (esto cubre cadenas de varios niveles,
+        // sin importar el orden en que llegaron).
+        private string ProcesarPendientes(out int categoriasResueltas)
+        {
+            categoriasResueltas = 0;
+            string advertencias = string.Empty;
+            bool huboProgreso = true;
+
+            while (huboProgreso)
+            {
+                huboProgreso = false;
+                NodoPendienteCategoria? anterior = null;
+                NodoPendienteCategoria? actual = inicioPendientes;
+
+                while (actual != null)
+                {
+                    NodoPendienteCategoria? siguienteGuardado = actual.Siguiente;
+
+                    ResultadoOperacion resultado = AgregarCategoria(actual.Nombre, actual.NombrePadre);
+                    if (resultado.Exito)
+                    {
+                        // Se pudo insertar: se saca de la cola
+                        if (anterior == null)
+                    inicioPendientes = actual.Siguiente;
+                        else
+                            anterior.Siguiente = actual.Siguiente;
+
+                        if (actual == finPendientes)
+                            finPendientes = anterior;
+
+                        categoriasResueltas++;
+                        huboProgreso = true;
+                        // anterior no avanza: actual fue removido de la cadena
+                    }
+                    else
+                    {
+                        anterior = actual;
+                    }
+
+                    actual = siguienteGuardado;
+                }
+            }
+
+            // Lo que sobrevive aquí sigue esperando un padre que aún no ha llegado
+            NodoPendienteCategoria? restante = inicioPendientes;
+            while (restante != null)
+            {
+                advertencias += $"La categoría '{restante.Nombre}' quedó en espera de su padre '{restante.NombrePadre}'. ";
+                restante = restante.Siguiente;
+            }
+
+            return advertencias;
+        }
+
+        // public ResultadoOperacion CargarDesdeXml(string contenidoXml)
+        // {
+        //     try
+        //     {
+        //         XmlDocument documento = new XmlDocument();
+        //         documento.LoadXml(contenidoXml);
+
+        //         int categoriasAgregadas = 0;
+        //         int librosAgregados = 0;
+        //         string advertencias = string.Empty;
+
+        //         XmlNode? nodoListaCategorias = documento.SelectSingleNode("//listaCategorias");
+        //         if (nodoListaCategorias != null)
+        //         {
+        //             foreach (XmlNode nodoCategoria in nodoListaCategorias.ChildNodes)
+        //             {
+        //                 if (nodoCategoria.NodeType != XmlNodeType.Element || nodoCategoria.Name != "categoria")
+        //                 {
+        //                     continue;
+        //                 }
+
+        //                 string nombre = nodoCategoria.InnerText.Trim();
+        //                 string? padre = nodoCategoria.Attributes?["padre"]?.Value;
+
+        //                 ResultadoOperacion resultado = AgregarCategoria(nombre, padre);
+        //                 if (resultado.Exito)
+        //                 {
+        //                     categoriasAgregadas++;
+        //                 }
+        //                 else
+        //                 {
+        //                     advertencias += resultado.Mensaje + " ";
+        //                 }
+        //             }
+        //         }
+
+        //         XmlNode? nodoListaLibros = documento.SelectSingleNode("//listaLibros");
+        //         if (nodoListaLibros != null)
+        //         {
+        //             foreach (XmlNode nodoLibro in nodoListaLibros.ChildNodes)
+        //             {
+        //                 if (nodoLibro.NodeType != XmlNodeType.Element || nodoLibro.Name != "libro")
+        //                 {
+        //                     continue;
+        //                 }
+
+        //                 string isbnTexto = nodoLibro.SelectSingleNode("ISBN")?.InnerText.Trim() ?? string.Empty;
+        //                 string titulo = nodoLibro.SelectSingleNode("titulo")?.InnerText.Trim() ?? string.Empty;
+        //                 string autor = nodoLibro.SelectSingleNode("autor")?.InnerText.Trim() ?? string.Empty;
+        //                 string categoria = nodoLibro.SelectSingleNode("categoria")?.InnerText.Trim() ?? string.Empty;
+
+        //                 if (!int.TryParse(isbnTexto, out int isbn))
+        //                 {
+        //                     advertencias += $"El libro '{titulo}' tiene un ISBN inválido. ";
+        //                     continue;
+        //                 }
+
+        //                 ResultadoOperacion resultado = AgregarLibro(isbn, titulo, autor, categoria);
+        //                 if (resultado.Exito)
+        //                 {
+        //                     librosAgregados++;
+        //                 }
+        //                 else
+        //                 {
+        //                     advertencias += resultado.Mensaje + " ";
+        //                 }
+        //             }
+        //         }
+
+        //         string mensaje = $"Se agregaron {categoriasAgregadas} categoría(s) y {librosAgregados} libro(s).";
+        //         if (!string.IsNullOrEmpty(advertencias))
+        //         {
+        //             mensaje += $" Advertencias: {advertencias.Trim()}";
+        //         }
+
+        //         return ResultadoOperacion.Ok(mensaje);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return ResultadoOperacion.Error($"Error al procesar el archivo XML: {ex.Message}");
+        //     }
+        // }
+
+
         public ResultadoOperacion CargarDesdeXml(string contenidoXml)
         {
             try
@@ -179,6 +352,14 @@ namespace Biblioteca.Servicios
                         string nombre = nodoCategoria.InnerText.Trim();
                         string? padre = nodoCategoria.Attributes?["padre"]?.Value;
 
+                        if (!string.IsNullOrWhiteSpace(padre) && ObtenerCategoria(padre.Trim()) == null)
+                        {
+                            // El padre todavía no existe: puede aparecer más abajo
+                            // en este mismo archivo, o en un entrada.xml posterior.
+                            EncolarPendiente(nombre, padre.Trim());
+                            continue;
+                        }
+
                         ResultadoOperacion resultado = AgregarCategoria(nombre, padre);
                         if (resultado.Exito)
                         {
@@ -190,6 +371,13 @@ namespace Biblioteca.Servicios
                         }
                     }
                 }
+
+                // Resolver pendientes (de este archivo y de archivos anteriores)
+                // ANTES de procesar libros, para que puedan referenciar categorías
+                // que se acaban de completar.
+                int resueltasPendientes;
+                advertencias += ProcesarPendientes(out resueltasPendientes);
+                categoriasAgregadas += resueltasPendientes;
 
                 XmlNode? nodoListaLibros = documento.SelectSingleNode("//listaLibros");
                 if (nodoListaLibros != null)
@@ -238,6 +426,7 @@ namespace Biblioteca.Servicios
             }
         }
 
+
         // ---------------GESTION DE DESCRIPCION DOT---------------
 
         public string GenerarDotEstructura(string? nombreCategoriaInicio)
@@ -279,6 +468,49 @@ namespace Biblioteca.Servicios
                 AgregarNodosCategoria(dot, sub);
                 dot.AppendLine($"    \"{id}\" -> \"{EscaparTexto(sub.Nombre)}\";");
             });
+        }
+
+        public string GenerarDotAVLLibros()
+        {
+            StringBuilder dot = new StringBuilder();
+            dot.AppendLine("digraph AVLLibros {");
+            dot.AppendLine("    rankdir=TB;");
+            dot.AppendLine("    node [shape=ellipse, style=filled, fillcolor=\"#FFE6CC\", color=\"#E87722\", fontname=\"Helvetica\"];");
+
+            if (indiceLibros.Raiz == null)
+            {
+                dot.AppendLine("    \"__vacio__\" [label=\"No hay libros registrados\", shape=box];");
+            }
+            else
+            {
+                AgregarNodosAVL(dot, indiceLibros.Raiz);
+            }
+
+            dot.AppendLine("}");
+            return dot.ToString();
+        }
+
+        private void AgregarNodosAVL(StringBuilder dot, NodoIndiceLibro nodo)
+        {
+            string id = $"libro_{nodo.Libro.Isbn}";
+            string etiqueta = $"{nodo.Libro.Isbn}\\n{EscaparTexto(nodo.Libro.Titulo)}";
+            string titulo = EscaparTexto($"{nodo.Libro.Titulo} (altura {nodo.Altura})");
+
+            dot.AppendLine($"    \"{id}\" [label=\"{etiqueta}\", tooltip=\"{titulo}\"];");
+
+            if (nodo.Izquierdo != null)
+            {
+                string idIzquierdo = $"libro_{nodo.Izquierdo.Libro.Isbn}";
+                AgregarNodosAVL(dot, nodo.Izquierdo);
+                dot.AppendLine($"    \"{id}\" -> \"{idIzquierdo}\" [label=\"izq\"];");
+            }
+
+            if (nodo.Derecho != null)
+            {
+                string idDerecho = $"libro_{nodo.Derecho.Libro.Isbn}";
+                AgregarNodosAVL(dot, nodo.Derecho);
+                dot.AppendLine($"    \"{id}\" -> \"{idDerecho}\" [label=\"der\"];");
+            }
         }
 
         // ------Genera el archivo DOT con los libros de una categoria, en orden ascendente por ISBN
@@ -323,7 +555,7 @@ namespace Biblioteca.Servicios
 
         private static string EscaparTexto(string texto)
         {
-            return texto.Replace("\"", "'");
+            return texto.Replace("\\", "\\\\").Replace("\"", "'");
         }
     }
 }

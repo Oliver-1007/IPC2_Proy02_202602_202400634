@@ -16,6 +16,12 @@
         <a asp-controller="Categorias" asp-action="Estructura" class="boton boton-secundario">Ver todo</a>
     </form>
 
+    <p>
+        <a asp-controller="Categorias" asp-action="GraficaAVL" class="boton boton-secundario">
+            Ver AVL de libros con Graphviz
+        </a>
+    </p>
+
     <div class="arbol">
         @if (!string.IsNullOrWhiteSpace(nombreInicio))
         {

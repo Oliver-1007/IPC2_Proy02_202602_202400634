@@ -1,0 +1,29 @@
+@{
+    ViewData["Title"] = "AVL de libros";
+}
+
+<section class="tarjeta">
+    <h1>AVL de libros ordenado por ISBN</h1>
+
+    @if (ViewBag.Error != null)
+    {
+        <p class="alerta alerta-error">@ViewBag.Error</p>
+        <p>Verifique que Graphviz (comando <code>dot</code>) esté instalado y disponible en el PATH del sistema.</p>
+    }
+    else
+    {
+        <img class="imagen-grafica" src="@ViewBag.RutaImagen" alt="Estructura AVL de libros ordenada por ISBN" />
+
+        <p>
+            <a asp-controller="Categorias" asp-action="DescargarImagenAVL" class="boton">
+                Ver DOT del AVL y descargar imagen
+            </a>
+        </p>
+    }
+
+    <p>
+        <a asp-controller="Categorias" asp-action="Estructura" class="boton boton-secundario">
+            Volver a la estructura
+        </a>
+    </p>
+</section>

@@ -1,0 +1,9 @@
+digraph EstructuraCatalogo {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor="#EAF2FB", fontname="Helvetica"];
+    "Ciencias" [label="Ciencias"];
+    "Cocina" [label="Cocina"];
+    "Ciencias" -> "Cocina";
+    "Tema 144" [label="Tema 144"];
+    "Ciencias" -> "Tema 144";
+}
